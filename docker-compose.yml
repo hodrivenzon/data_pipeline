@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  data-pipeline:
+    build: .
+    container_name: data-pipeline
+    volumes:
+      # Mount input data directory
+      - ./file_store/input:/app/file_store/input:ro
+      # Mount output directory
+      - ./file_store/output:/app/file_store/output
+      # Mount config file
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - PYTHONPATH=/app
+    # Override default command
+    command: ["python", "main.py"]
+    
+  # Service for running tests
+  data-pipeline-test:
+    build: .
+    container_name: data-pipeline-test
+    volumes:
+      - ./file_store/input:/app/file_store/input:ro
+      - ./file_store/output:/app/file_store/output
+      - ./config.yaml:/app/config.yaml:ro
+    command: ["python", "main.py", "--dry-run"]
+    
+  # Service for running with custom paths
+  data-pipeline-custom:
+    build: .
+    container_name: data-pipeline-custom
+    volumes:
+      - ./file_store/input:/custom/input:ro
+      - ./file_store/output:/custom/output
+      - ./config.yaml:/app/config.yaml:ro
+    command: ["python", "main.py", "--input", "/custom/input", "--output", "/custom/output"]

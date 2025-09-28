@@ -1,0 +1,215 @@
+# Data Pipeline Configuration File
+# This file contains all configurable settings for the data pipeline
+
+# File paths and names (relative to project root - will be resolved dynamically)
+files:
+  # Input file paths (relative to project root)
+  projects_file: "file_store/input/excel_1_project_study_cohort.csv"
+  subjects_file: "file_store/input/excel_2_subject_samples.csv"
+  results_file: "file_store/input/excel_3_sample_run_results.csv"
+  
+  # Output file paths (relative to project root)
+  output_parquet: "file_store/output/output.parquet"
+  summary_csv: "file_store/output/summary.csv"
+
+# Column names configuration
+columns:
+  # Project/Study/Cohort columns
+  project_code: "project_code"
+  study_code: "study_code"
+  study_cohort_code: "study_cohort_code"
+  project_name: "project_name"
+  study_name: "study_name"
+  study_cohort_name: "study_cohort_name"
+  project_manager_name: "project_manager_name"
+  disease_name: "disease_name"
+  
+  # Subject/Sample columns
+  subject_id: "subject_id"
+  sample_id: "sample_id"
+  sample_type: "type"
+  
+  # Results columns
+  cancer_detected: "cancer_detected_(yes_no)"
+  detection_value: " detection_value "
+  sample_quality: "sample_quality"
+  sample_quality_min_threshold: "sample_quality_minimum_threshold"
+  sample_status: "sample_status(running/finished/failed)"
+  fail_reason: "fail_reason(technical/quality)"
+  date_of_run: "date of run"
+
+# Data processing configuration
+data:
+  # Data cleaning column groups
+  categorical_columns:
+    - "project_name"
+    - "study_name"
+    - "study_cohort_name"
+    - "project_manager"
+  
+  numeric_columns:
+    - "detection_value"
+    - "sample_quality"
+    - "sample_quality_threshold"
+  
+  # Data validation settings
+  validation:
+    strict_mode: false
+    allow_duplicates: false
+    required_columns:
+      projects:
+        - "project_code"
+        - "study_code"
+        - "study_cohort_code"
+      subjects:
+        - "project_code"
+        - "study_code" 
+        - "study_cohort_code"
+        - "subject_id"
+        - "sample_id"
+      results:
+        - "sample_id"
+  
+  # Data transformation settings
+  transformation:
+    standardize_strings: true
+    handle_missing_values: true
+    remove_duplicates: true
+    validate_schema: true
+
+  # Column mappings for data cleaning (CSV column name -> Schema column name)
+  column_mappings:
+    results:
+      # Map messy CSV column names to clean schema names
+      " detection_value ": "detection_value"  # Remove spaces
+      "cancer_detected_(yes_no)": "cancer_detected"  # Remove suffix
+      "sample_status(running/finished/failed)": "sample_status"  # Remove parentheses
+      "fail_reason(technical/quality)": "fail_reason"  # Remove parentheses
+      "sample_quality_minimum_threshold": "sample_quality_threshold"  # Rename
+      "date of run": "date_of_run"  # Replace spaces with underscores
+    subjects:
+      # Add any subjects column mappings if needed
+      "type": "sample_type"  # Rename type to sample_type
+    projects:
+      # Add any projects column mappings if needed (none currently needed)
+      # No column mappings needed for projects
+
+  # Value mappings for data standardization
+  value_mappings:
+    results:
+      sample_status:
+        # Standardize case for sample_status values (handle both cases)
+        "finished": "Finished"
+        "Finished": "Finished"  # Keep correct values as-is
+        "running": "Running" 
+        "Running": "Running"    # Keep correct values as-is
+        "failed": "Failed"
+        "Failed": "Failed"      # Keep correct values as-is
+        "completed": "Completed"
+        "Completed": "Completed" # Keep correct values as-is
+        "error": "Error"
+        "Error": "Error"        # Keep correct values as-is
+        "inprogress": "InProgress"
+        "InProgress": "InProgress" # Keep correct values as-is
+      detection_value:
+        # Handle spaces and invalid values in detection_value
+        "  ": null              # Convert spaces to null
+        " ": null               # Convert single space to null
+        "": null                # Convert empty string to null
+        "N/A": null             # Convert N/A to null
+        "NA": null              # Convert NA to null
+        "nan": null             # Convert nan to null
+        "NaN": null             # Convert NaN to null
+        "null": null            # Convert null string to null
+        "NULL": null            # Convert NULL to null
+      cancer_detected:
+        # Standardize all values to Yes/No only
+        "Yes": "Yes"
+        "No": "No"
+        "Y": "Yes"              # Standardize Y to Yes
+        "N": "No"                # Standardize N to No
+        "True": "Yes"            # Standardize True to Yes
+        "False": "No"            # Standardize False to No
+        "1": "Yes"               # Standardize 1 to Yes
+        "0": "No"                # Standardize 0 to No
+        "yes": "Yes"             # Standardize case
+        "no": "No"               # Standardize case
+        # Clean invalid values for cancer_detected (remove NA/nan)
+        "NA": null              # Convert NA to null (will be handled by missing value logic)
+        "nan": null             # Convert nan to null (will be handled by missing value logic)
+        "NaN": null             # Convert NaN to null (will be handled by missing value logic)
+        "N/A": null             # Convert N/A to null (will be handled by missing value logic)
+        "n/a": null             # Convert n/a to null (will be handled by missing value logic)
+
+  # Schema constraint definitions for validation
+  constraints:
+    results:
+      detection_value:
+        min_value: 0.0
+        max_value: 1.0
+        description: "Detection value must be between 0.0 and 1.0"
+      sample_quality:
+        min_value: 0.0
+        max_value: 1.0
+        description: "Sample quality must be between 0.0 and 1.0"
+      sample_quality_threshold:
+        min_value: 0.0
+        max_value: 1.0
+        description: "Sample quality threshold must be between 0.0 and 1.0"
+      cancer_detected:
+        allowed_values: ["Yes", "No"]
+        description: "Cancer detected must be Yes or No only"
+      sample_status:
+        allowed_values: ["Running", "Finished", "Failed", "InProgress", "Completed", "Error"]
+        description: "Sample status must be one of the allowed values"
+
+# Summary generation configuration
+summary:
+  # Groupby columns for summary statistics
+  groupby_columns:
+    - "project_code"
+    - "study_code"
+    - "study_cohort_code"
+  
+  # Metrics to calculate
+  metrics:
+    - "samples_detected"
+    - "finished_percentage"
+    - "lowest_detection"
+
+# Pipeline execution configuration
+pipeline:
+  # Execution settings
+  dry_run: false
+  verbose_logging: false
+  
+  # Error handling
+  continue_on_error: false
+  max_retries: 3
+  
+  # Performance settings
+  chunk_size: 10000
+  parallel_processing: false
+
+# Logging configuration
+logging:
+  log_level: "DEBUG"
+  log_format: "%(asctime)s - %(levelname)s - %(message)s"
+  log_to_file: false
+  log_file_path: "logs/pipeline.log"
+
+# Output configuration
+output:
+  # File format settings
+  parquet:
+    compression: "snappy"
+    engine: "pyarrow"
+  
+  csv:
+    encoding: "utf-8"
+    separator: ","
+    include_index: false
+  
+  # Validation output
+  save_validation_report: true
+  validation_report_path: "file_store/output/validation_report.txt"
