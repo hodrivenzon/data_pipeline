@@ -1,0 +1,206 @@
+{
+  "metadata": {
+    "file_type": "projects",
+    "generated_at": "2025-09-28T13:32:34.340086",
+    "data_shape": {
+      "rows": 23,
+      "columns": 8
+    },
+    "data_columns": [
+      "project_name",
+      "project_code",
+      "study_name",
+      "study_code",
+      "study_cohort_name",
+      "study_cohort_code",
+      "disease_name",
+      "project_manager_name"
+    ],
+    "schema_columns": [
+      "project_code",
+      "study_code",
+      "study_cohort_code",
+      "project_name",
+      "study_name",
+      "study_cohort_name",
+      "project_manager_name",
+      "disease_name"
+    ]
+  },
+  "transformation_steps": [
+    {
+      "step_number": 1,
+      "step_name": "pre_validation",
+      "description": "Validate data before cleaning",
+      "enabled": true,
+      "parameters": {
+        "schema_type": "projects",
+        "lazy": true,
+        "capture_errors": true
+      }
+    },
+    {
+      "step_number": 2,
+      "step_name": "column_mapping",
+      "description": "Map and standardize column names",
+      "enabled": true,
+      "parameters": {
+        "column_mappings": {}
+      }
+    },
+    {
+      "step_number": 4,
+      "step_name": "string_standardization",
+      "description": "Clean and standardize string columns",
+      "enabled": true,
+      "parameters": {
+        "columns": [
+          "project_code",
+          "study_code",
+          "study_cohort_code",
+          "project_name",
+          "study_name",
+          "study_cohort_name",
+          "project_manager_name",
+          "disease_name"
+        ],
+        "operations": [
+          "strip",
+          "lower",
+          "remove_extra_spaces"
+        ]
+      }
+    },
+    {
+      "step_number": 5,
+      "step_name": "missing_value_handling",
+      "description": "Handle missing values based on schema rules",
+      "enabled": true,
+      "parameters": {
+        "required_columns": [
+          "project_code",
+          "study_code",
+          "study_cohort_code",
+          "project_name",
+          "study_name",
+          "study_cohort_name",
+          "project_manager_name",
+          "disease_name"
+        ],
+        "nullable_columns": [],
+        "default_strategies": {
+          "string": "empty_string",
+          "numeric": "none",
+          "datetime": "none"
+        }
+      }
+    },
+    {
+      "step_number": 6,
+      "step_name": "type_conversion",
+      "description": "Convert data types to match schema",
+      "enabled": true,
+      "parameters": {
+        "type_mappings": {
+          "project_code": "str",
+          "study_code": "str",
+          "study_cohort_code": "str",
+          "project_name": "str",
+          "study_name": "str",
+          "study_cohort_name": "str",
+          "project_manager_name": "str",
+          "disease_name": "str"
+        },
+        "coerce_errors": true
+      }
+    },
+    {
+      "step_number": 7,
+      "step_name": "duplicate_removal",
+      "description": "Remove duplicates based on key columns: ['project_code', 'study_code', 'study_cohort_code']",
+      "enabled": true,
+      "parameters": {
+        "subset": [
+          "project_code",
+          "study_code",
+          "study_cohort_code"
+        ],
+        "keep": "first"
+      }
+    },
+    {
+      "step_number": 8,
+      "step_name": "post_validation",
+      "description": "Validate cleaned data against schema",
+      "enabled": true,
+      "parameters": {
+        "schema_type": "projects",
+        "lazy": true,
+        "strict_mode": false
+      }
+    }
+  ],
+  "schema_analysis": {
+    "total_columns": 8,
+    "required_columns": [
+      "project_code",
+      "study_code",
+      "study_cohort_code",
+      "project_name",
+      "study_name",
+      "study_cohort_name",
+      "project_manager_name",
+      "disease_name"
+    ],
+    "nullable_columns": [],
+    "data_types": {
+      "project_code": "str",
+      "study_code": "str",
+      "study_cohort_code": "str",
+      "project_name": "str",
+      "study_name": "str",
+      "study_cohort_name": "str",
+      "project_manager_name": "str",
+      "disease_name": "str"
+    },
+    "constraints": {},
+    "checks": {},
+    "missing_critical_rules": [
+      {
+        "column": "project_name",
+        "rule_type": "string_validation",
+        "suggestion": "Consider adding string length or pattern validation"
+      },
+      {
+        "column": "study_name",
+        "rule_type": "string_validation",
+        "suggestion": "Consider adding string length or pattern validation"
+      },
+      {
+        "column": "study_cohort_name",
+        "rule_type": "string_validation",
+        "suggestion": "Consider adding string length or pattern validation"
+      },
+      {
+        "column": "project_manager_name",
+        "rule_type": "string_validation",
+        "suggestion": "Consider adding string length or pattern validation"
+      },
+      {
+        "column": "disease_name",
+        "rule_type": "string_validation",
+        "suggestion": "Consider adding string length or pattern validation"
+      }
+    ]
+  },
+  "column_mappings": {
+    "project_code": "project_code",
+    "study_code": "study_code",
+    "study_cohort_code": "study_cohort_code",
+    "project_name": "project_name",
+    "study_name": "study_name",
+    "study_cohort_name": "study_cohort_name",
+    "project_manager_name": "project_manager_name",
+    "disease_name": "disease_name"
+  }
+}

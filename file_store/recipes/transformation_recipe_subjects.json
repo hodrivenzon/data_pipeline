@@ -1,0 +1,174 @@
+{
+  "metadata": {
+    "file_type": "subjects",
+    "generated_at": "2025-09-28T13:32:34.359153",
+    "data_shape": {
+      "rows": 2980,
+      "columns": 6
+    },
+    "data_columns": [
+      "project_code",
+      "study_code",
+      "study_cohort_code",
+      "subject_id",
+      "sample_id",
+      "sample_type"
+    ],
+    "schema_columns": [
+      "project_code",
+      "study_code",
+      "study_cohort_code",
+      "subject_id",
+      "sample_id",
+      "sample_type"
+    ]
+  },
+  "transformation_steps": [
+    {
+      "step_number": 1,
+      "step_name": "pre_validation",
+      "description": "Validate data before cleaning",
+      "enabled": true,
+      "parameters": {
+        "schema_type": "subjects",
+        "lazy": true,
+        "capture_errors": true
+      }
+    },
+    {
+      "step_number": 2,
+      "step_name": "column_mapping",
+      "description": "Map and standardize column names",
+      "enabled": true,
+      "parameters": {
+        "column_mappings": {
+          "type": "sample_type"
+        }
+      }
+    },
+    {
+      "step_number": 4,
+      "step_name": "string_standardization",
+      "description": "Clean and standardize string columns",
+      "enabled": true,
+      "parameters": {
+        "columns": [
+          "project_code",
+          "study_code",
+          "study_cohort_code",
+          "subject_id",
+          "sample_id",
+          "sample_type"
+        ],
+        "operations": [
+          "strip",
+          "lower",
+          "remove_extra_spaces"
+        ]
+      }
+    },
+    {
+      "step_number": 5,
+      "step_name": "missing_value_handling",
+      "description": "Handle missing values based on schema rules",
+      "enabled": true,
+      "parameters": {
+        "required_columns": [
+          "project_code",
+          "study_code",
+          "study_cohort_code",
+          "subject_id",
+          "sample_id",
+          "sample_type"
+        ],
+        "nullable_columns": [],
+        "default_strategies": {
+          "string": "empty_string",
+          "numeric": "none",
+          "datetime": "none"
+        }
+      }
+    },
+    {
+      "step_number": 6,
+      "step_name": "type_conversion",
+      "description": "Convert data types to match schema",
+      "enabled": true,
+      "parameters": {
+        "type_mappings": {
+          "project_code": "str",
+          "study_code": "str",
+          "study_cohort_code": "str",
+          "subject_id": "str",
+          "sample_id": "str",
+          "sample_type": "str"
+        },
+        "coerce_errors": true
+      }
+    },
+    {
+      "step_number": 7,
+      "step_name": "duplicate_removal",
+      "description": "Remove duplicates based on key columns: ['project_code', 'study_code', 'study_cohort_code', 'subject_id', 'sample_id']",
+      "enabled": true,
+      "parameters": {
+        "subset": [
+          "project_code",
+          "study_code",
+          "study_cohort_code",
+          "subject_id",
+          "sample_id"
+        ],
+        "keep": "first"
+      }
+    },
+    {
+      "step_number": 8,
+      "step_name": "post_validation",
+      "description": "Validate cleaned data against schema",
+      "enabled": true,
+      "parameters": {
+        "schema_type": "subjects",
+        "lazy": true,
+        "strict_mode": false
+      }
+    }
+  ],
+  "schema_analysis": {
+    "total_columns": 6,
+    "required_columns": [
+      "project_code",
+      "study_code",
+      "study_cohort_code",
+      "subject_id",
+      "sample_id",
+      "sample_type"
+    ],
+    "nullable_columns": [],
+    "data_types": {
+      "project_code": "str",
+      "study_code": "str",
+      "study_cohort_code": "str",
+      "subject_id": "str",
+      "sample_id": "str",
+      "sample_type": "str"
+    },
+    "constraints": {},
+    "checks": {},
+    "missing_critical_rules": [
+      {
+        "column": "sample_type",
+        "rule_type": "string_validation",
+        "suggestion": "Consider adding string length or pattern validation"
+      }
+    ]
+  },
+  "column_mappings": {
+    "project_code": "project_code",
+    "study_code": "study_code",
+    "study_cohort_code": "study_cohort_code",
+    "subject_id": "subject_id",
+    "sample_id": "sample_id",
+    "sample_type": "sample_type"
+  }
+}
