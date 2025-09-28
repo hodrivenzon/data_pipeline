@@ -87,6 +87,7 @@ Thumbs.db
 file_store/input/
 file_store/output/
 file_store/reports/
+file_store/recipes/
 
 # Logs
 *.log
